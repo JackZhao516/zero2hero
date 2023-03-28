@@ -54,7 +54,7 @@ contract MasterChef is Ownable{
         }
         uint256 blocksSinceLastReward = block.number - pool.lastRewardBlock;
         uint256 rewards = blocksSinceLastReward * 100;
-        pool.accSushiPerShare = pool.accSushiPerShare + (rewards * 1e12 / pool.allocPoint);
+        pool.accSushiPerShare = pool.accSushiPerShare + (rewards * 1e18 / pool.allocPoint);
         pool.lastRewardBlock = block.number;
     }
 
@@ -63,12 +63,12 @@ contract MasterChef is Ownable{
         UserInfo storage user = userInfo[_pid][msg.sender];
         updatePool(_pid);
         if (user.amount > 0) {
-            uint256 pending = user.amount * pool.accSushiPerShare / 1e12 - user.rewardDebt;
+            uint256 pending = user.amount * pool.accSushiPerShare / 1e18 - user.rewardDebt;
             sushi.transfer(msg.sender, pending);
         }
         pool.lpToken.transferFrom(address(msg.sender), address(this), _amount);
         user.amount = user.amount + _amount;
-        user.rewardDebt = user.amount * pool.accSushiPerShare / 1e12;
+        user.rewardDebt = user.amount * pool.accSushiPerShare / 1e18;
         emit Deposit(msg.sender, _pid, _amount);
     }
 
@@ -78,10 +78,10 @@ contract MasterChef is Ownable{
 
         require(user.amount >= _amount, "withdraw not good");
         updatePool(_pid);
-        uint256 pending = user.amount * pool.accSushiPerShare / 1e12 - user.rewardDebt;
+        uint256 pending = user.amount * pool.accSushiPerShare / 1e18 - user.rewardDebt;
         sushi.transfer(msg.sender, pending);
         user.amount = user.amount - _amount;
-        user.rewardDebt = user.amount * pool.accSushiPerShare / 1e12;
+        user.rewardDebt = user.amount * pool.accSushiPerShare / 1e18;
         pool.lpToken.transfer(address(msg.sender), _amount);
 
         emit Withdraw(msg.sender, _pid, _amount);
